@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Patient Readmission Prediction</title>
+</head>
+<body>
+  <h2>Enter Patient Details</h2>
+  <form id="predictForm">
+    Age: <input type="number" id="age"><br>
+    Stay Length: <input type="number" id="stay"><br>
+    Total Cost: <input type="number" id="cost"><br>
+    Gender: <input type="text" id="gender"><br>
+    Condition: <input type="text" id="condition"><br>
+    Treatment: <input type="text" id="treatment"><br>
+    <button type="submit">Predict</button>
+  </form>
+  <p id="result"></p>
+
+  <script>
+    document.getElementById("predictForm").onsubmit = async function(e) {
+      e.preventDefault();
+      const data = {
+        Age: parseInt(document.getElementById("age").value),
+        Stay_Length: parseInt(document.getElementById("stay").value),
+        Total_Cost: parseFloat(document.getElementById("cost").value),
+        Gender: document.getElementById("gender").value,
+        Condition: document.getElementById("condition").value,
+        Treatment: document.getElementById("treatment").value
+      };
+      try {
+        const response = await fetch("http://127.0.0.1:8080/predict", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify(data)
+        });
+        const result = await response.json();
+        if (result.error) {
+          document.getElementById("result").innerText = "Error: " + result.error;
+        } else {
+          document.getElementById("result").innerText = "Prediction: " + result.message;
+        }
+      } catch (error) {
+        document.getElementById("result").innerText = "Connection error: " + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
